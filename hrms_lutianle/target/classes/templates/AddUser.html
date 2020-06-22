@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加用户</title>
+    <style type="text/css">
+        body{
+              margin-left: 40%;
+              margin-top: 200px;
+          }
+    </style>
+</head>
+<body><div >
+<table id="tb">
+    <tr>
+        <td>用户名</td>
+        <td><input type="text" id="userid"></td>
+    </tr>
+    <tr>
+        <td>部门</td>
+        <td><select id="sel">
+        </select></td>
+    </tr>
+    <tr>
+        <td>姓名</td>
+        <td><input type="text" id="username"> </td>
+    </tr>
+
+    <tr>
+        <td>
+            邮箱
+        </td>
+        <td><input type="text" id="email"></td>
+    </tr>
+    <tr>
+        <td>电话</td>
+        <td><input type="text" id="phonenum"></td>
+    </tr>
+    <tr>
+        <td>用户状态:</td>
+        <td><input id="checkbox" type="checkbox" value="1">启用</td>
+    </tr>
+    <tr>
+        <td><button id="add" onclick="add()">添加</button></td>
+        <td><button id="reset" onclick="location.reload()">重置</button></td>
+    </tr>
+</table>
+</div>
+</body>
+<script type="text/javascript" src="../static/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        queryDept();
+    })
+
+    var queryDept=function () {
+
+        $.ajax({
+            type:"post",
+            url:"/queryAllDept",
+            dataType: 'json',
+            success:function (result) {
+                console.log(result);
+                var i = result.length;
+                for (let j = 0; j < i; j++) {
+                    var option = $("<option>"+result[j].dname+"</option>")
+                    option.val(result[j].deptid);
+                    $("#sel").append(option);
+                }
+
+            }
+        })
+    }
+
+    var add=function(){
+        $.ajax({
+            type:"post",
+            url:"/addUser",
+            data:{
+                "userid":$("#userid").val(),
+                "deptid":$("#sel").val(),
+                "username":$("#username").val(),
+                "email":$("#email").val(),
+                "phonenum":$("#phonenum").val(),
+                "status":$("#checkbox").val(),
+            },
+            dataType:'json'
+        })
+    }
+</script>
+</html>

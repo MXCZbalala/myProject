@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改用户信息</title>
+</head>
+<style type="text/css">
+    body{
+        margin-left: 40%;
+        margin-top: 200px;
+        text-align: center;
+    }
+</style>
+<body>
+<table id="tb" border="1" cellspacing="0" >
+    <tr>
+        <td>用户名</td>
+        <td><input type="text" id="userid"></td>
+    </tr>
+    <tr>
+        <td>部门</td>
+        <td><select id="select">
+            <option id="option"></option>
+        </select></td>
+    </tr>
+    <tr>
+        <td>姓名</td>
+        <td><input type="text" id="username"></td>
+    </tr>
+
+    <tr>
+        <td>
+            邮箱
+        </td>
+        <td><input type="text" id="email"></td>
+    </tr>
+    <tr>
+        <td>电话</td>
+        <td><input type="text" id="phonenum"></td>
+    </tr>
+    <tr>
+        <td>用户状态:</td>
+        <td><input id="checkbox" type="checkbox" value="1">启用</td>
+    </tr>
+    <tr>
+        <td>
+            <button id="add" onclick="add()">确定</button>
+        </td>
+        <td>
+            <button id="reset" onclick="location.reload()">重置</button>
+        </td>
+    </tr>
+</table>
+</body>
+<script type="text/javascript" src="../static/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        init();
+        queryDept();
+    })
+    var queryDept=function () {
+
+        $.ajax({
+            type:"post",
+            url:"/queryAllDept",
+            dataType: 'json',
+            success:function (result) {
+                console.log(result);
+                var i = result.length;
+                for (let j = 0; j < i; j++) {
+                    var option = $("<option>"+result[j].dname+"</option>")
+                    option.val(result[j].deptid);
+                    $("#select").append(option);
+                }
+
+            }
+        })
+    }
+
+    var init = function () {
+        console.log(localStorage.getItem("userid"));
+        $.ajax({
+            type: "post",
+            url: "/queryById",
+            data: {
+                "id":localStorage.getItem("userid")
+            },
+            dataType: 'json',
+            success: function (result) {
+                console.log(result[0].dept.dname);
+                    $("#userid").val(result[0].userid),
+                    $("#option").text(result[0].dept.dname),
+                    $("#username").val(result[0].username),
+                    $("#email").val(result[0].email),
+                    $("#phonenum").val(result[0].phonenum)
+            }
+        })
+
+    }
+
+</script>
+</html>

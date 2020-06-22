@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>员工列表</title>
+</head>
+
+<style type="text/css">
+    body{
+        text-align: center;
+    }
+    table{
+        margin-left: 20%;
+        width: 800px;
+    }
+</style>
+
+<body>
+<div id="div1">
+<input type="text" id="inp">
+<button type="button" id="sel" onclick="quieryById()">查询</button>
+<button type="button" id="add" onclick="window.location='/toAdd'">添加</button>
+</div>
+<table id="tb" border="1" cellspacing="1" bgcolor="#7fffd4">
+    <tr>
+        <td>用户ID</td>
+        <td>姓名</td>
+        <td>邮箱</td>
+        <td>电话号码</td>
+        <td>账号状态</td>
+        <td>部门名称</td>
+        <td>操作</td>
+    </tr>
+</table>
+</body>
+<script type="text/javascript" src="../static/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        init();
+
+    })
+
+
+    var quieryById= function () {
+       var text= $("#inp").val();
+
+       $.ajax({
+           type: "post",
+           url:"/queryByUserName",
+           dataType: 'json',
+           data:{
+               "username" :text
+           },
+           success : function (result) {
+               $(".query").remove();
+               $(".queryById").remove();
+               var i = result.length;
+               for (let j = 0; j < i; j++) {
+                   var status1 = result[j].status;
+                   if (status1=="1"){
+                       status1="启用";
+                   }else {
+                       status1="禁用";
+                   }
+                   var tr= $("<tr class='queryById'></tr>");
+                   var td1 = $("<td>"+result[j].userid+"</td>");
+                   var td2 = $("<td>"+result[j].username+"</td>");
+                   var td6 = $("<td>"+result[j].deptid+"</td>");
+                   var td3 = $("<td>"+result[j].email+"</td>");
+                   var td4 = $("<td>"+result[j].phonenum+"</td>");
+                   var td5 = $("<td>"+status1+"</td>");
+                   var btn1 = $("<td><button onclick='update("+result[j].userid+")'  class='change'>"+"修改"+"</button>"+"<button onclick='del("+result[j].userid+")' class='del'>"+"删除"+"</button></td>");
+                   tr.append(td1);
+                   tr.append(td2);
+                   tr.append(td3);
+                   tr.append(td4);
+                   tr.append(td5);
+                   tr.append(td6);
+                   tr.append(btn1);
+                   $("#tb").append(tr);
+               }
+           }
+       })
+    }
+
+    var update=function (j) {
+        console.log(j);
+        window.location="/update?id="+j+"";
+        localStorage.setItem("userid",j);
+    }
+
+
+    var del= function (j) {
+        $.ajax({
+            type:"post",
+            url:"/deleteById",
+            dataType:'json',
+            data: {
+                "userid":j
+            },
+            success:function (result) {
+                if (result==1){
+                    alert("删除成功")
+                    window.location="/";
+                }
+            }
+        })
+    }
+    var init=function(){
+        $.ajax({
+            type:"post",
+            url:"/queryAllUser",
+            dataType:'json',
+            success:function(data) {
+                var i = data.length;
+                for (var j = 0; j < i; j++) {
+                    var status = data[j].status;
+                    if (status=="1"){
+                        status="启用";
+                    }else {
+                        status="禁用";
+                    }
+                    var tr= $("<tr class='queryById'></tr>");
+                    var td1 = $("<td>"+data[j].userid+"</td>");
+                    var td2 = $("<td>"+data[j].username+"</td>");
+                    var td6 = $("<td>"+data[j].dept.dname+"</td>");
+                    var td3 = $("<td>"+data[j].email+"</td>");
+                    var td4 = $("<td>"+data[j].phonenum+"</td>");
+                    var td5 = $("<td>"+status+"</td>");
+                    var btn1 = $("<td><button  onclick='update("+data[j].userid+")'>"+"修改"+"</button>"+"<button  onclick='del("+data[j].userid+")'>"+"删除"+"</button></td>");
+
+                    tr.append(td1);
+                    tr.append(td2);
+                    tr.append(td3);
+                    tr.append(td4);
+                    tr.append(td5);
+                    tr.append(td6);
+                    tr.append(btn1);
+                    $("#tb").append(tr);
+                }
+            }
+        })
+    }
+</script>
+
+</html>
